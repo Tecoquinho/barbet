@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #f4f7f2;
+  background: #08110d;
+}
+
+body {
+  @apply min-h-screen bg-pitch font-body text-white antialiased;
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+.glass-panel {
+  @apply rounded-3xl border border-white/10 bg-white/10 backdrop-blur-xl shadow-glow;
+}
+
+.input {
+  @apply w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/40 focus:border-lime focus:ring-2 focus:ring-lime/30;
+}
+
+.btn-primary {
+  @apply inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-lime to-gold px-4 py-3 font-semibold text-night transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 py-3 font-semibold text-white transition hover:bg-white/15;
+}
+
+.chip {
+  @apply inline-flex items-center rounded-full border border-lime/20 bg-lime/10 px-3 py-1 text-xs font-semibold text-lime;
+}
