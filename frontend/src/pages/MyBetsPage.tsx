@@ -5,6 +5,12 @@ import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets } from "../services/clientService";
 import { Bet } from "../types/api";
 
+function winnerLabel(bet: Bet) {
+  if (bet.vencedorEscolhido === "TEAM_A") return bet.timeA;
+  if (bet.vencedorEscolhido === "TEAM_B") return bet.timeB;
+  return "Empate";
+}
+
 export default function MyBetsPage() {
   const session = useRequireSession();
   const [bets, setBets] = useState<Bet[]>([]);
@@ -21,35 +27,40 @@ export default function MyBetsPage() {
   const summary = useMemo(() => {
     return bets.reduce(
       (acc, bet) => {
-        acc.pontos += bet.pontos;
         acc.cervejas += bet.quantidadeCervejas;
+        acc.valor += (bet.precoCerveja ?? 0) * bet.quantidadeCervejas;
+        acc.retorno += bet.retornoPotencial ?? 0;
         return acc;
       },
-      { pontos: 0, cervejas: 0 }
+      { cervejas: 0, valor: 0, retorno: 0 }
     );
   }, [bets]);
 
   return (
     <div className="space-y-5">
       <SectionHeader
-        eyebrow={session?.apelido ?? "Sessao"}
-        title="Meus palpites"
-        description="Acompanhe status, pontos e o total de cervejas simbolicas colocadas na brincadeira."
+        eyebrow={session?.nomeCompleto ?? "Sessao"}
+        title="Minhas apostas"
+        description="Aqui ficam salvas suas entradas confirmadas, a cerveja escolhida e o retorno potencial de cada jogo."
       />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Total de pontos</p>
-          <p className="mt-2 font-display text-3xl font-bold text-gold">{summary.pontos}</p>
+          <p className="text-sm text-white/60">Cupons</p>
+          <p className="mt-2 font-display text-3xl font-bold text-gold">{bets.length}</p>
         </div>
         <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Cervejas apostadas</p>
-          <p className="mt-2 font-display text-3xl font-bold text-lime">{summary.cervejas}</p>
+          <p className="text-sm text-white/60">Investido</p>
+          <p className="mt-2 font-display text-2xl font-bold text-white">R$ {summary.valor.toFixed(2)}</p>
+        </div>
+        <div className="glass-panel p-4">
+          <p className="text-sm text-white/60">Retorno pot.</p>
+          <p className="mt-2 font-display text-2xl font-bold text-lime">R$ {summary.retorno.toFixed(2)}</p>
         </div>
       </div>
       <NoticeCard />
       <div className="space-y-4">
         {bets.length === 0 && (
-          <div className="glass-panel p-5 text-sm text-white/70">Voce ainda nao fez nenhum palpite.</div>
+          <div className="glass-panel p-5 text-sm text-white/70">Voce ainda nao confirmou nenhuma aposta.</div>
         )}
         {bets.map((bet) => (
           <div key={bet.id} className="glass-panel p-4">
@@ -63,16 +74,17 @@ export default function MyBetsPage() {
               <span className="chip">{bet.quantidadeCervejas} cervejas</span>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-white/70">
-              <p>Vencedor: {bet.vencedorEscolhido}</p>
+              <p>Mercado: {winnerLabel(bet)}</p>
+              <p>Odd: {bet.odd?.toFixed(2)}</p>
+              <p>Cerveja: {bet.cervejaNome}</p>
+              <p>Preco unit.: R$ {bet.precoCerveja?.toFixed(2)}</p>
               <p>
                 Placar: {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
               </p>
-              <p>
-                Pontos: <span className="font-semibold text-gold">{bet.pontos}</span>
-              </p>
+              <p>Retorno: R$ {bet.retornoPotencial?.toFixed(2)}</p>
               <p>
                 Data:{" "}
-                {new Date(bet.dataHora).toLocaleString("pt-BR", {
+                {new Date(bet.createdAt).toLocaleString("pt-BR", {
                   dateStyle: "short",
                   timeStyle: "short",
                 })}

@@ -3,6 +3,8 @@ export type WinnerChoice = "TEAM_A" | "TEAM_B" | "DRAW";
 
 export interface CustomerSession {
   customerId: number;
+  nomeCompleto: string;
+  cpf: string;
   apelido: string;
   telefone?: string;
   mesaId: number;
@@ -17,8 +19,21 @@ export interface Match {
   timeB: string;
   dataHora: string;
   status: MatchStatus;
+  competition?: string;
+  stage?: string;
+  venue?: string;
+  oddTeamA?: number;
+  oddDraw?: number;
+  oddTeamB?: number;
   golsTimeA?: number;
   golsTimeB?: number;
+}
+
+export interface BeerOption {
+  id: string;
+  nome: string;
+  marca: string;
+  preco: number;
 }
 
 export interface Bet {
@@ -30,6 +45,12 @@ export interface Bet {
   placarTimeA?: number;
   placarTimeB?: number;
   quantidadeCervejas: number;
+  cervejaId?: string;
+  cervejaNome?: string;
+  cervejaMarca?: string;
+  precoCerveja?: number;
+  odd?: number;
+  retornoPotencial?: number;
   pontos: number;
   status: MatchStatus;
   dataHora: string;

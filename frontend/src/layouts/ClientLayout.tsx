@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 const navItems = [
-  { to: "jogos", label: "Jogos" },
+  { to: "jogos", label: "Jogos de Hoje" },
   { to: "meus-palpites", label: "Meus palpites" },
 ];
 
