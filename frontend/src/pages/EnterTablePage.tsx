@@ -49,7 +49,7 @@ export default function EnterTablePage() {
       <div className="glass-panel space-y-4 p-5">
         <div className="rounded-3xl border border-gold/20 bg-gold/10 p-4 text-sm text-foam">
           <p className="font-semibold">Bar do Teco</p>
-          <p className="mt-1 text-white/70">Palpites recreativos com cervejas brasileiras e odds ficticias.</p>
+          <p className="mt-1 text-white/70">Palpites recreativos em pool, com cervejas simbolicas e divisao entre vencedores.</p>
         </div>
         <form className="space-y-4" onSubmit={onSubmit}>
           <input

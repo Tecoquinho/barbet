@@ -27,8 +27,8 @@ export default function MatchesPage() {
     load();
   }, [session]);
 
-  const totalRetorno = useMemo(() => {
-    return bets.reduce((sum, bet) => sum + (bet.retornoPotencial ?? 0), 0);
+  const totalApostado = useMemo(() => {
+    return bets.reduce((sum, bet) => sum + bet.quantidadeCervejas, 0);
   }, [bets]);
 
   return (
@@ -36,7 +36,7 @@ export default function MatchesPage() {
       <SectionHeader
         eyebrow={session ? `${session.barNome} • ${session.mesaCodigo}` : "Carregando"}
         title="Jogos de Hoje"
-        description="Dashboard com jogos ficticios da Copa do Mundo, mercado 1X2 e retorno potencial em cada aposta."
+        description="Escolha o jogo, entre no pool da rodada e dispute as cervejas perdidas por quem errar."
       />
       <div className="grid grid-cols-3 gap-3">
         <div className="glass-panel p-4">
@@ -48,8 +48,8 @@ export default function MatchesPage() {
           <p className="mt-2 font-display text-3xl font-bold text-lime">{bets.length}</p>
         </div>
         <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Retorno pot.</p>
-          <p className="mt-2 font-display text-2xl font-bold text-white">R$ {totalRetorno.toFixed(2)}</p>
+          <p className="text-sm text-white/60">Cervejas apostadas</p>
+          <p className="mt-2 font-display text-2xl font-bold text-white">{totalApostado.toFixed(0)}</p>
         </div>
       </div>
       <NoticeCard />

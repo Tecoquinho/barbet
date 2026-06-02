@@ -80,12 +80,6 @@ function formatCpf(value: string) {
     .replace(/\.(\d{3})(\d)/, ".$1-$2");
 }
 
-function getOddForChoice(match: Match, winner: WinnerChoice) {
-  if (winner === "TEAM_A") return match.oddTeamA ?? 1;
-  if (winner === "TEAM_B") return match.oddTeamB ?? 1;
-  return match.oddDraw ?? 1;
-}
-
 function getChoiceLabel(match: Match, winner: WinnerChoice) {
   if (winner === "TEAM_A") return match.timeA;
   if (winner === "TEAM_B") return match.timeB;
@@ -156,9 +150,6 @@ export async function createBet(payload: {
     throw { response: { data: { details: ["Voce ja fez uma aposta para este jogo."] } } };
   }
 
-  const odd = getOddForChoice(match, payload.vencedorEscolhido);
-  const totalStake = Number((beer.preco * payload.quantidadeCervejas).toFixed(2));
-  const retornoPotencial = Number((totalStake * odd).toFixed(2));
   const now = new Date().toISOString();
 
   const bet: Bet & { clienteId: number } = {
@@ -175,9 +166,11 @@ export async function createBet(payload: {
     cervejaNome: beer.nome,
     cervejaMarca: beer.marca,
     precoCerveja: beer.preco,
-    odd,
-    retornoPotencial,
     pontos: 0,
+    acertouResultado: false,
+    premioCervejas: 0,
+    saldoLiquidoCervejas: 0,
+    comissaoBarCervejas: 0,
     status: "OPEN",
     dataHora: match.dataHora,
     createdAt: now,

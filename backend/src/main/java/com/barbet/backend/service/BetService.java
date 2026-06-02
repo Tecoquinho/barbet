@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -45,6 +47,10 @@ public class BetService {
                 .placarTimeB(request.placarTimeB())
                 .quantidadeCervejas(request.quantidadeCervejas())
                 .pontos(0)
+                .acertouResultado(false)
+                .premioCervejas(BigDecimal.ZERO)
+                .saldoLiquidoCervejas(BigDecimal.ZERO)
+                .comissaoBarCervejas(BigDecimal.ZERO)
                 .build());
 
         return mapperService.toBetResponse(bet);
@@ -65,9 +71,25 @@ public class BetService {
         }
         WinnerChoice finalWinner = resolveWinner(match.getGolsTimeA(), match.getGolsTimeB());
         List<Bet> bets = betRepository.findByJogoId(match.getId());
+        List<Bet> winningBets = bets.stream()
+                .filter(bet -> bet.getVencedorEscolhido() == finalWinner)
+                .toList();
+        BigDecimal totalLosingPool = bets.stream()
+                .filter(bet -> bet.getVencedorEscolhido() != finalWinner)
+                .map(bet -> BigDecimal.valueOf(bet.getQuantidadeCervejas()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal barCommission = winningBets.isEmpty() || totalLosingPool.signum() <= 0
+                ? BigDecimal.ZERO
+                : totalLosingPool.min(BigDecimal.ONE);
+        BigDecimal distributablePool = totalLosingPool.subtract(barCommission);
+        BigDecimal prizePerWinner = winningBets.isEmpty()
+                ? BigDecimal.ZERO
+                : distributablePool.divide(BigDecimal.valueOf(winningBets.size()), 2, RoundingMode.HALF_UP);
+
         for (Bet bet : bets) {
+            boolean acertouResultado = bet.getVencedorEscolhido() == finalWinner;
             int points = 0;
-            if (bet.getVencedorEscolhido() == finalWinner) {
+            if (acertouResultado) {
                 points += 3;
             }
             if (bet.getPlacarTimeA() != null && bet.getPlacarTimeB() != null
@@ -76,6 +98,12 @@ public class BetService {
                 points += 5;
             }
             bet.setPontos(points);
+            bet.setAcertouResultado(acertouResultado);
+            bet.setPremioCervejas(acertouResultado ? prizePerWinner : BigDecimal.ZERO);
+            bet.setSaldoLiquidoCervejas(acertouResultado
+                    ? prizePerWinner
+                    : BigDecimal.valueOf(bet.getQuantidadeCervejas()).negate());
+            bet.setComissaoBarCervejas(barCommission);
         }
         betRepository.saveAll(bets);
     }

@@ -77,6 +77,8 @@ Ao subir o backend pela primeira vez, o sistema cria automaticamente:
 - Minimo de 1 cerveja e maximo de 20 por palpite
 - Acertar vencedor: `3 pontos`
 - Acertar placar: `5 pontos`
+- Ao finalizar um jogo, os vencedores dividem igualmente as cervejas apostadas pelos perdedores
+- O bar retira `1 cerveja` fixa por jogo liquidado com vencedores
 - Sessao cliente simples via `localStorage`
 - Admin autenticado via JWT simples
 

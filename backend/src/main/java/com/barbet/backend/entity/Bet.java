@@ -3,6 +3,7 @@ package com.barbet.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -47,6 +48,18 @@ public class Bet {
     private Integer pontos;
 
     @Column(nullable = false)
+    private Boolean acertouResultado;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal premioCervejas;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal saldoLiquidoCervejas;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal comissaoBarCervejas;
+
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     @PrePersist
@@ -56,6 +69,18 @@ public class Bet {
         }
         if (pontos == null) {
             pontos = 0;
+        }
+        if (acertouResultado == null) {
+            acertouResultado = false;
+        }
+        if (premioCervejas == null) {
+            premioCervejas = BigDecimal.ZERO;
+        }
+        if (saldoLiquidoCervejas == null) {
+            saldoLiquidoCervejas = BigDecimal.ZERO;
+        }
+        if (comissaoBarCervejas == null) {
+            comissaoBarCervejas = BigDecimal.ZERO;
         }
     }
 }

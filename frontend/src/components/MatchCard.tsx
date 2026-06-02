@@ -31,19 +31,19 @@ export default function MatchCard({ match, action }: MatchCardProps) {
         </div>
         {action}
       </div>
-      {match.status === "OPEN" && (match.oddTeamA || match.oddDraw || match.oddTeamB) && (
+      {match.status === "OPEN" && (
         <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
           <div className="rounded-2xl bg-black/20 px-3 py-2">
             <p className="text-white/45">1</p>
-            <p className="mt-1 font-semibold text-lime">{match.oddTeamA?.toFixed(2)}</p>
+            <p className="mt-1 font-semibold text-lime">{match.timeA}</p>
           </div>
           <div className="rounded-2xl bg-black/20 px-3 py-2">
             <p className="text-white/45">X</p>
-            <p className="mt-1 font-semibold text-lime">{match.oddDraw?.toFixed(2)}</p>
+            <p className="mt-1 font-semibold text-lime">Empate</p>
           </div>
           <div className="rounded-2xl bg-black/20 px-3 py-2">
             <p className="text-white/45">2</p>
-            <p className="mt-1 font-semibold text-lime">{match.oddTeamB?.toFixed(2)}</p>
+            <p className="mt-1 font-semibold text-lime">{match.timeB}</p>
           </div>
         </div>
       )}

@@ -34,6 +34,10 @@ public class MapperService {
                 bet.getPlacarTimeB(),
                 bet.getQuantidadeCervejas(),
                 bet.getPontos(),
+                bet.getAcertouResultado(),
+                bet.getPremioCervejas(),
+                bet.getSaldoLiquidoCervejas(),
+                bet.getComissaoBarCervejas(),
                 bet.getJogo().getStatus(),
                 bet.getJogo().getDataHora(),
                 bet.getCreatedAt()

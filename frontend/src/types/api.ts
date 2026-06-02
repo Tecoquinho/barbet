@@ -49,9 +49,11 @@ export interface Bet {
   cervejaNome?: string;
   cervejaMarca?: string;
   precoCerveja?: number;
-  odd?: number;
-  retornoPotencial?: number;
   pontos: number;
+  acertouResultado?: boolean;
+  premioCervejas?: number;
+  saldoLiquidoCervejas?: number;
+  comissaoBarCervejas?: number;
   status: MatchStatus;
   dataHora: string;
   createdAt: string;

@@ -35,24 +35,9 @@ export default function BetPage() {
     load();
   }, [matchId, session]);
 
-  const oddSelecionada = useMemo(() => {
-    if (!match) return 0;
-    if (winner === "TEAM_A") return match.oddTeamA ?? 0;
-    if (winner === "TEAM_B") return match.oddTeamB ?? 0;
-    return match.oddDraw ?? 0;
-  }, [match, winner]);
-
   const cervejaSelecionada = useMemo(() => {
     return beers.find((item) => item.id === cervejaId) ?? null;
   }, [beers, cervejaId]);
-
-  const valorTotal = useMemo(() => {
-    return Number(((cervejaSelecionada?.preco ?? 0) * cervejas).toFixed(2));
-  }, [cervejaSelecionada, cervejas]);
-
-  const retornoPotencial = useMemo(() => {
-    return Number((valorTotal * oddSelecionada).toFixed(2));
-  }, [oddSelecionada, valorTotal]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -82,7 +67,7 @@ export default function BetPage() {
       <SectionHeader
         eyebrow="Nova aposta"
         title="Escolha mercado e cerveja"
-        description="Selecione o resultado do jogo, a cerveja brasileira que vai bancar sua entrada e confirme a odd ficticia."
+        description="Selecione o resultado do jogo e entre no pool. Quem acertar divide as cervejas dos perdedores, com 1 cerveja separada para o bar."
       />
       {match && <MatchCard match={match} />}
       <form className="glass-panel space-y-5 p-5" onSubmit={onSubmit}>
@@ -91,9 +76,9 @@ export default function BetPage() {
           <div className="grid grid-cols-3 gap-2">
             {match &&
               [
-                { label: match.timeA, value: "TEAM_A", odd: match.oddTeamA },
-                { label: "Empate", value: "DRAW", odd: match.oddDraw },
-                { label: match.timeB, value: "TEAM_B", odd: match.oddTeamB },
+                { label: match.timeA, value: "TEAM_A" },
+                { label: "Empate", value: "DRAW" },
+                { label: match.timeB, value: "TEAM_B" },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -106,7 +91,6 @@ export default function BetPage() {
                   }`}
                 >
                   <span className="block">{option.label}</span>
-                  <span className="mt-1 block text-xs opacity-80">odd {option.odd?.toFixed(2)}</span>
                 </button>
               ))}
           </div>
@@ -167,16 +151,16 @@ export default function BetPage() {
 
         <div className="grid grid-cols-3 gap-3 rounded-3xl border border-white/10 bg-black/20 p-4 text-sm">
           <div>
-            <p className="text-white/50">Odd</p>
-            <p className="mt-1 font-semibold text-lime">{oddSelecionada.toFixed(2)}</p>
-          </div>
-          <div>
             <p className="text-white/50">Entrada</p>
-            <p className="mt-1 font-semibold text-white">R$ {valorTotal.toFixed(2)}</p>
+            <p className="mt-1 font-semibold text-lime">{cervejas} cervejas</p>
           </div>
           <div>
-            <p className="text-white/50">Retorno</p>
-            <p className="mt-1 font-semibold text-gold">R$ {retornoPotencial.toFixed(2)}</p>
+            <p className="text-white/50">Cerveja escolhida</p>
+            <p className="mt-1 font-semibold text-white">{cervejaSelecionada?.nome ?? "-"}</p>
+          </div>
+          <div>
+            <p className="text-white/50">Regra</p>
+            <p className="mt-1 font-semibold text-gold">1 cerveja fica no bar</p>
           </div>
         </div>
 

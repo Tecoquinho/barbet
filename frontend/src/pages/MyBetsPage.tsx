@@ -27,12 +27,12 @@ export default function MyBetsPage() {
   const summary = useMemo(() => {
     return bets.reduce(
       (acc, bet) => {
-        acc.cervejas += bet.quantidadeCervejas;
-        acc.valor += (bet.precoCerveja ?? 0) * bet.quantidadeCervejas;
-        acc.retorno += bet.retornoPotencial ?? 0;
+        acc.apostadas += bet.quantidadeCervejas;
+        acc.premios += bet.premioCervejas ?? 0;
+        acc.saldo += bet.saldoLiquidoCervejas ?? 0;
         return acc;
       },
-      { cervejas: 0, valor: 0, retorno: 0 }
+      { apostadas: 0, premios: 0, saldo: 0 }
     );
   }, [bets]);
 
@@ -41,7 +41,7 @@ export default function MyBetsPage() {
       <SectionHeader
         eyebrow={session?.nomeCompleto ?? "Sessao"}
         title="Minhas apostas"
-        description="Aqui ficam salvas suas entradas confirmadas, a cerveja escolhida e o retorno potencial de cada jogo."
+        description="Aqui ficam salvas suas entradas confirmadas, o premio dividido do pool e o saldo de cada jogo."
       />
       <div className="grid grid-cols-3 gap-3">
         <div className="glass-panel p-4">
@@ -49,12 +49,12 @@ export default function MyBetsPage() {
           <p className="mt-2 font-display text-3xl font-bold text-gold">{bets.length}</p>
         </div>
         <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Investido</p>
-          <p className="mt-2 font-display text-2xl font-bold text-white">R$ {summary.valor.toFixed(2)}</p>
+          <p className="text-sm text-white/60">Cervejas apostadas</p>
+          <p className="mt-2 font-display text-2xl font-bold text-white">{summary.apostadas.toFixed(0)}</p>
         </div>
         <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Retorno pot.</p>
-          <p className="mt-2 font-display text-2xl font-bold text-lime">R$ {summary.retorno.toFixed(2)}</p>
+          <p className="text-sm text-white/60">Saldo liquido</p>
+          <p className="mt-2 font-display text-2xl font-bold text-lime">{summary.saldo.toFixed(2)} cervejas</p>
         </div>
       </div>
       <NoticeCard />
@@ -75,13 +75,13 @@ export default function MyBetsPage() {
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-white/70">
               <p>Mercado: {winnerLabel(bet)}</p>
-              <p>Odd: {bet.odd?.toFixed(2)}</p>
-              <p>Cerveja: {bet.cervejaNome}</p>
-              <p>Preco unit.: R$ {bet.precoCerveja?.toFixed(2)}</p>
+              <p>Acertou: {bet.acertouResultado ? "Sim" : "Nao"}</p>
               <p>
                 Placar: {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
               </p>
-              <p>Retorno: R$ {bet.retornoPotencial?.toFixed(2)}</p>
+              <p>Premio do pool: {(bet.premioCervejas ?? 0).toFixed(2)} cervejas</p>
+              <p>Comissao do bar: {(bet.comissaoBarCervejas ?? 0).toFixed(2)} cerveja</p>
+              <p>Saldo: {(bet.saldoLiquidoCervejas ?? 0).toFixed(2)} cervejas</p>
               <p>
                 Data:{" "}
                 {new Date(bet.createdAt).toLocaleString("pt-BR", {
