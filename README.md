@@ -116,6 +116,45 @@ As variaveis padrao estao em `.env` na raiz e exemplos locais em:
 - [backend/.env.example](/C:/Users/Teco/BarBet/backend/.env.example)
 - [frontend/.env.example](/C:/Users/Teco/BarBet/frontend/.env.example)
 
+## Deploy: Vercel + Railway
+
+- O deploy atual da Vercel publica apenas o frontend porque o [vercel.json](/C:/Users/Teco/BarBet/vercel.json) compila somente `frontend/`
+- O backend Spring Boot deve ser publicado separadamente no Railway, usando a pasta `backend/`
+- O backend agora respeita a porta `PORT` injetada pelo Railway e expõe `GET /api/health` para healthcheck
+
+### Backend no Railway
+
+1. Crie um novo projeto no Railway
+2. Adicione um serviço `PostgreSQL`
+3. Adicione um segundo serviço a partir deste repositório GitHub
+4. No serviço do backend, configure `Root Directory` como `/backend`
+5. Em `Variables`, defina:
+
+```env
+SPRING_DATASOURCE_URL=${{Postgres.DATABASE_URL}}
+SPRING_DATASOURCE_USERNAME=${{Postgres.PGUSER}}
+SPRING_DATASOURCE_PASSWORD=${{Postgres.PGPASSWORD}}
+APP_JWT_SECRET=troque-este-segredo
+APP_JWT_EXPIRATION_MINUTES=720
+APP_ADMIN_EMAIL=admin@barbet.com
+APP_ADMIN_PASSWORD=troque-esta-senha
+APP_FRONTEND_BASE_URL=https://seu-frontend.vercel.app
+APP_CORS_ALLOWED_ORIGIN_PATTERNS=http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app
+```
+
+6. Em `Networking`, gere um dominio publico para o backend
+
+### Frontend no Vercel
+
+1. Mantenha o projeto atual da Vercel apontando para este repositorio
+2. Em `Environment Variables`, defina:
+
+```env
+VITE_API_URL=https://seu-backend.up.railway.app/api
+```
+
+3. Faça um novo deploy no Vercel depois de salvar a variavel
+
 ## Observacoes
 
 - O QR Code aponta para rotas do frontend local, por exemplo `http://localhost:5173/bar/bar-do-teco/mesa/MESA01`
