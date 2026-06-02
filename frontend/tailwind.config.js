@@ -4,14 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        night: "#08110d",
-        field: "#0d3b2a",
-        gold: "#f3c74f",
-        lime: "#7ddf64",
-        foam: "#f8ecd2",
+        night: "#0d1117",
+        field: "#11161d",
+        gold: "#f0b429",
+        lime: "#f0b429",
+        foam: "#f8fafc",
+        panel: "#161b22",
+        ink: "#c9d1d9",
       },
       boxShadow: {
-        glow: "0 20px 45px rgba(125, 223, 100, 0.18)",
+        glow: "0 18px 48px rgba(0, 0, 0, 0.38)",
       },
       fontFamily: {
         display: ["Poppins", "sans-serif"],

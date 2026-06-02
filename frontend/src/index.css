@@ -3,23 +3,19 @@
 @tailwind utilities;
 
 :root {
-  color: #f7f5ea;
-  background: #06100b;
+  color: #f8fafc;
+  background: #0d1117;
 }
 
 html {
-  background:
-    radial-gradient(circle at top, rgba(124, 223, 100, 0.16), transparent 28%),
-    radial-gradient(circle at 85% 18%, rgba(243, 199, 79, 0.14), transparent 18%),
-    linear-gradient(180deg, #0b1711 0%, #07100c 52%, #050a07 100%);
+  background: #0d1117;
 }
 
 body {
   @apply min-h-screen font-body text-white antialiased;
   background:
-    radial-gradient(circle at top, rgba(124, 223, 100, 0.14), transparent 30%),
-    radial-gradient(circle at 100% 0%, rgba(243, 199, 79, 0.1), transparent 24%),
-    linear-gradient(180deg, #0b1711 0%, #07100c 52%, #050a07 100%);
+    radial-gradient(circle at top, rgba(240, 180, 41, 0.08), transparent 24%),
+    linear-gradient(180deg, #0d1117 0%, #0d1117 100%);
 }
 
 #root {
@@ -27,33 +23,32 @@ body {
 }
 
 .glass-panel {
-  @apply rounded-[28px] border border-white/10 bg-white/[0.08] shadow-glow backdrop-blur-2xl;
+  @apply border border-white/10 bg-[#161b22] shadow-glow;
+  border-radius: 32px;
   box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 18px 48px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .panel-soft {
-  @apply rounded-[24px] bg-black/20 backdrop-blur-xl;
+  @apply bg-[#0f141b];
+  border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .line-soft {
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .match-shell {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    rgba(3, 9, 7, 0.52);
+  background: #161b22;
 }
 
 .bet-shell {
   background:
-    radial-gradient(circle at top right, rgba(243, 199, 79, 0.12), transparent 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03)),
-    rgba(3, 9, 7, 0.56);
+    radial-gradient(circle at top right, rgba(240, 180, 41, 0.08), transparent 28%),
+    #161b22;
 }
 
 .surface-outline {
@@ -64,33 +59,33 @@ body {
 
 .hero-panel {
   background:
-    radial-gradient(circle at top left, rgba(124, 223, 100, 0.24), transparent 34%),
-    radial-gradient(circle at 100% 0%, rgba(243, 199, 79, 0.18), transparent 24%),
-    linear-gradient(155deg, rgba(13, 59, 42, 0.92), rgba(6, 17, 13, 0.98));
+    radial-gradient(circle at top right, rgba(240, 180, 41, 0.12), transparent 30%),
+    linear-gradient(180deg, #161b22 0%, #131820 100%);
 }
 
 .stat-panel {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    rgba(4, 11, 8, 0.4);
+  background: #161b22;
 }
 
 .input {
-  @apply w-full rounded-[22px] border border-white/10 bg-black/30 px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-lime focus:ring-2 focus:ring-lime/25;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  @apply w-full border border-white/10 bg-[#0f141b] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/35 focus:border-gold focus:ring-2 focus:ring-gold/20;
+  border-radius: 22px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .btn-primary {
-  @apply inline-flex w-full items-center justify-center rounded-[22px] bg-gradient-to-r from-lime to-gold px-4 py-3.5 font-semibold text-night transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50;
-  box-shadow: 0 16px 30px rgba(125, 223, 100, 0.2);
+  @apply inline-flex w-full items-center justify-center bg-[#f0b429] px-4 py-3.5 font-semibold text-[#0d1117] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50;
+  border-radius: 22px;
+  box-shadow: 0 12px 24px rgba(240, 180, 41, 0.2);
 }
 
 .btn-secondary {
-  @apply inline-flex w-full items-center justify-center rounded-[22px] border border-white/10 bg-white/[0.07] px-4 py-3.5 font-semibold text-white transition hover:bg-white/[0.12];
+  @apply inline-flex w-full items-center justify-center border border-white/10 bg-[#0f141b] px-4 py-3.5 font-semibold text-white transition hover:bg-white/[0.06];
+  border-radius: 22px;
 }
 
 .chip {
-  @apply inline-flex items-center rounded-full border border-lime/20 bg-lime/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-lime;
+  @apply inline-flex items-center rounded-full border border-gold/20 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold;
 }
 
 .tiny-label {
@@ -105,7 +100,21 @@ body {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
+.phone-frame {
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  min-height: calc(100vh - 24px);
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+    #0d1117;
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
 ::selection {
-  background: rgba(124, 223, 100, 0.28);
-  color: #f7f5ea;
+  background: rgba(240, 180, 41, 0.32);
+  color: #0d1117;
 }
