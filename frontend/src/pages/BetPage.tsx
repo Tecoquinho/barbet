@@ -70,7 +70,7 @@ export default function BetPage() {
         description="Selecione o resultado, marque seu placar e confirme quantas cervejas simbolicas entram no pool."
       />
       {match && <MatchCard match={match} />}
-      <form className="glass-panel space-y-5 p-5" onSubmit={onSubmit}>
+      <form className="glass-panel bet-shell space-y-5 p-5" onSubmit={onSubmit}>
         <div className="space-y-2">
           <p className="tiny-label">Resultado da aposta</p>
           <div className="grid grid-cols-3 gap-2">
@@ -84,10 +84,10 @@ export default function BetPage() {
                   key={option.value}
                   type="button"
                   onClick={() => setWinner(option.value as WinnerChoice)}
-                  className={`rounded-[22px] border px-3 py-3 text-sm font-semibold transition ${
+                  className={`rounded-[20px] border px-3 py-4 text-sm font-semibold transition ${
                     winner === option.value
-                      ? "border-lime bg-gradient-to-br from-lime to-gold text-night shadow-[0_16px_30px_rgba(125,223,100,0.2)]"
-                      : "border-white/10 bg-white/[0.05] text-white"
+                      ? "border-gold bg-gold/12 text-white shadow-[0_12px_24px_rgba(243,199,79,0.12)]"
+                      : "border-white/10 bg-white/[0.04] text-white/82"
                   }`}
                 >
                   <span className="block">{option.label}</span>
@@ -149,7 +149,7 @@ export default function BetPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm">
+        <div className="grid grid-cols-3 gap-3 rounded-[22px] border border-white/8 bg-black/18 p-4 text-sm">
           <div>
             <p className="tiny-label">Entrada</p>
             <p className="mt-2 font-semibold text-lime">{cervejas} cervejas</p>

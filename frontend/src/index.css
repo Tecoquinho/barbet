@@ -38,6 +38,24 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.line-soft {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.match-shell {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    rgba(3, 9, 7, 0.52);
+}
+
+.bet-shell {
+  background:
+    radial-gradient(circle at top right, rgba(243, 199, 79, 0.12), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03)),
+    rgba(3, 9, 7, 0.56);
+}
+
 .surface-outline {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:

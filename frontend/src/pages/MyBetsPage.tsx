@@ -55,56 +55,55 @@ export default function MyBetsPage() {
           <div className="glass-panel p-5 text-sm text-white/70">Voce ainda nao confirmou nenhuma aposta.</div>
         )}
         {bets.map((bet) => (
-          <div key={bet.id} className="glass-panel p-4">
+          <div key={bet.id} className="glass-panel bet-shell p-4">
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <p className="tiny-label">{bet.status}</p>
-                <h3 className="mt-2 font-display text-xl font-semibold text-white">
-                  {bet.timeA} <span className="text-white/40">x</span> {bet.timeB}
+                <h3 className="mt-2 truncate font-display text-xl font-semibold text-white">
+                  {bet.timeA} <span className="text-white/35">x</span> {bet.timeB}
                 </h3>
+                <p className="mt-1 text-sm text-white/58">Palpite em {winnerLabel(bet)}</p>
               </div>
               <span className="chip">{bet.quantidadeCervejas} cervejas</span>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-white/70">
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Mercado</p>
-                <p className="mt-2 text-white">{winnerLabel(bet)}</p>
+
+            <div className="mt-4 rounded-[22px] border border-white/8 bg-black/18 p-4">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                <div>
+                  <p className="tiny-label">Placar</p>
+                  <p className="mt-1 text-white">
+                    {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="tiny-label">Acerto</p>
+                  <p className={`mt-1 font-semibold ${bet.acertouResultado ? "text-lime" : "text-white/72"}`}>
+                    {bet.acertouResultado ? "Resultado certo" : "Resultado nao bateu"}
+                  </p>
+                </div>
+                <div>
+                  <p className="tiny-label">Premio</p>
+                  <p className="mt-1 font-semibold text-gold">{(bet.premioCervejas ?? 0).toFixed(2)} cervejas</p>
+                </div>
+                <div>
+                  <p className="tiny-label">Saldo</p>
+                  <p className={`mt-1 font-semibold ${(bet.saldoLiquidoCervejas ?? 0) >= 0 ? "text-lime" : "text-white"}`}>
+                    {(bet.saldoLiquidoCervejas ?? 0).toFixed(2)} cervejas
+                  </p>
+                </div>
               </div>
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Acerto</p>
-                <p className={`mt-2 font-semibold ${bet.acertouResultado ? "text-lime" : "text-white/75"}`}>
-                  {bet.acertouResultado ? "Acertou o resultado" : "Nao bateu o resultado"}
-                </p>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/58">
+                <span className="line-soft rounded-full px-3 py-2">
+                  Bar: {(bet.comissaoBarCervejas ?? 0).toFixed(2)} cerveja
+                </span>
+                <span className="line-soft rounded-full px-3 py-2">
+                  {new Date(bet.createdAt).toLocaleString("pt-BR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </span>
               </div>
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Placar</p>
-                <p className="mt-2 text-white">
-                  {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
-                </p>
-              </div>
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Premio do pool</p>
-                <p className="mt-2 text-gold">{(bet.premioCervejas ?? 0).toFixed(2)} cervejas</p>
-              </div>
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Bar</p>
-                <p className="mt-2 text-white">{(bet.comissaoBarCervejas ?? 0).toFixed(2)} cerveja</p>
-              </div>
-              <div className="panel-soft px-3 py-3">
-                <p className="tiny-label">Saldo</p>
-                <p className={`mt-2 font-semibold ${(bet.saldoLiquidoCervejas ?? 0) >= 0 ? "text-lime" : "text-white"}`}>
-                  {(bet.saldoLiquidoCervejas ?? 0).toFixed(2)} cervejas
-                </p>
-              </div>
-            </div>
-            <div className="mt-3 text-xs text-white/46">
-              <p>
-                Data:{" "}
-                {new Date(bet.createdAt).toLocaleString("pt-BR", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}
-              </p>
             </div>
           </div>
         ))}
