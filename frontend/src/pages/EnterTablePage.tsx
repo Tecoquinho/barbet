@@ -43,15 +43,22 @@ export default function EnterTablePage() {
     <div className="space-y-5">
       <SectionHeader
         eyebrow={`Mesa ${mesaCodigo}`}
-        title="Entrar no dashboard"
-        description="Antes de abrir as apostas, confirme seus dados para acompanhar jogos, odds e historico da rodada."
+        title="Entrar no bolao da rodada"
+        description="Confirme seus dados para liberar os jogos, acompanhar a mesa e disputar o pool simbolico em cervejas."
       />
-      <div className="glass-panel space-y-4 p-5">
-        <div className="rounded-3xl border border-gold/20 bg-gold/10 p-4 text-sm text-foam">
-          <p className="font-semibold">Bar do Teco</p>
-          <p className="mt-1 text-white/70">Palpites recreativos em pool, com cervejas simbolicas e divisao entre vencedores.</p>
+      <div className="glass-panel overflow-hidden p-5">
+        <div className="rounded-[24px] border border-gold/15 bg-gradient-to-br from-gold/16 to-white/5 p-4 text-sm text-foam">
+          <p className="tiny-label text-gold/80">Hoje no bar</p>
+          <p className="mt-2 text-lg font-semibold text-white">Bar do Teco</p>
+          <p className="mt-1 leading-6 text-white/68">
+            Quem acertar o resultado divide as cervejas de quem errou. O bar separa 1 cerveja por jogo.
+          </p>
         </div>
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="mt-5 space-y-4" onSubmit={onSubmit}>
+          <div>
+            <p className="tiny-label">Identificacao</p>
+            <p className="mt-1 text-sm text-white/58">A entrada e simples e fica salva so neste dispositivo.</p>
+          </div>
           <input
             className="input"
             placeholder="Nome completo"

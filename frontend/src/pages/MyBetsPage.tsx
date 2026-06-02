@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import NoticeCard from "../components/NoticeCard";
 import SectionHeader from "../components/SectionHeader";
+import StatCard from "../components/StatCard";
 import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets } from "../services/clientService";
 import { Bet } from "../types/api";
@@ -28,8 +29,8 @@ export default function MyBetsPage() {
     return bets.reduce(
       (acc, bet) => {
         acc.apostadas += bet.quantidadeCervejas;
-        acc.premios += bet.premioCervejas ?? 0;
         acc.saldo += bet.saldoLiquidoCervejas ?? 0;
+        acc.premios += bet.premioCervejas ?? 0;
         return acc;
       },
       { apostadas: 0, premios: 0, saldo: 0 }
@@ -41,21 +42,12 @@ export default function MyBetsPage() {
       <SectionHeader
         eyebrow={session?.nomeCompleto ?? "Sessao"}
         title="Minhas apostas"
-        description="Aqui ficam salvas suas entradas confirmadas, o premio dividido do pool e o saldo de cada jogo."
+        description="Consulte seus palpites, veja o saldo por jogo e acompanhe como o pool foi dividido."
       />
       <div className="grid grid-cols-3 gap-3">
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Cupons</p>
-          <p className="mt-2 font-display text-3xl font-bold text-gold">{bets.length}</p>
-        </div>
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Cervejas apostadas</p>
-          <p className="mt-2 font-display text-2xl font-bold text-white">{summary.apostadas.toFixed(0)}</p>
-        </div>
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Saldo liquido</p>
-          <p className="mt-2 font-display text-2xl font-bold text-lime">{summary.saldo.toFixed(2)} cervejas</p>
-        </div>
+        <StatCard label="Cupons" value={bets.length} hint="Jogos registrados" />
+        <StatCard label="Apostadas" value={summary.apostadas.toFixed(0)} hint="Cervejas em jogo" />
+        <StatCard label="Saldo liquido" value={summary.saldo.toFixed(2)} hint="Resultado da rodada" />
       </div>
       <NoticeCard />
       <div className="space-y-4">
@@ -66,22 +58,46 @@ export default function MyBetsPage() {
           <div key={bet.id} className="glass-panel p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-white/45">{bet.status}</p>
-                <h3 className="mt-2 font-display text-xl font-semibold">
+                <p className="tiny-label">{bet.status}</p>
+                <h3 className="mt-2 font-display text-xl font-semibold text-white">
                   {bet.timeA} <span className="text-white/40">x</span> {bet.timeB}
                 </h3>
               </div>
               <span className="chip">{bet.quantidadeCervejas} cervejas</span>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-white/70">
-              <p>Mercado: {winnerLabel(bet)}</p>
-              <p>Acertou: {bet.acertouResultado ? "Sim" : "Nao"}</p>
-              <p>
-                Placar: {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
-              </p>
-              <p>Premio do pool: {(bet.premioCervejas ?? 0).toFixed(2)} cervejas</p>
-              <p>Comissao do bar: {(bet.comissaoBarCervejas ?? 0).toFixed(2)} cerveja</p>
-              <p>Saldo: {(bet.saldoLiquidoCervejas ?? 0).toFixed(2)} cervejas</p>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Mercado</p>
+                <p className="mt-2 text-white">{winnerLabel(bet)}</p>
+              </div>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Acerto</p>
+                <p className={`mt-2 font-semibold ${bet.acertouResultado ? "text-lime" : "text-white/75"}`}>
+                  {bet.acertouResultado ? "Acertou o resultado" : "Nao bateu o resultado"}
+                </p>
+              </div>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Placar</p>
+                <p className="mt-2 text-white">
+                  {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
+                </p>
+              </div>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Premio do pool</p>
+                <p className="mt-2 text-gold">{(bet.premioCervejas ?? 0).toFixed(2)} cervejas</p>
+              </div>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Bar</p>
+                <p className="mt-2 text-white">{(bet.comissaoBarCervejas ?? 0).toFixed(2)} cerveja</p>
+              </div>
+              <div className="panel-soft px-3 py-3">
+                <p className="tiny-label">Saldo</p>
+                <p className={`mt-2 font-semibold ${(bet.saldoLiquidoCervejas ?? 0) >= 0 ? "text-lime" : "text-white"}`}>
+                  {(bet.saldoLiquidoCervejas ?? 0).toFixed(2)} cervejas
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 text-xs text-white/46">
               <p>
                 Data:{" "}
                 {new Date(bet.createdAt).toLocaleString("pt-BR", {

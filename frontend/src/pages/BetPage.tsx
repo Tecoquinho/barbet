@@ -67,12 +67,12 @@ export default function BetPage() {
       <SectionHeader
         eyebrow="Nova aposta"
         title="Escolha mercado e cerveja"
-        description="Selecione o resultado do jogo e entre no pool. Quem acertar divide as cervejas dos perdedores, com 1 cerveja separada para o bar."
+        description="Selecione o resultado, marque seu placar e confirme quantas cervejas simbolicas entram no pool."
       />
       {match && <MatchCard match={match} />}
       <form className="glass-panel space-y-5 p-5" onSubmit={onSubmit}>
         <div className="space-y-2">
-          <p className="text-sm text-white/70">Resultado da aposta</p>
+          <p className="tiny-label">Resultado da aposta</p>
           <div className="grid grid-cols-3 gap-2">
             {match &&
               [
@@ -84,10 +84,10 @@ export default function BetPage() {
                   key={option.value}
                   type="button"
                   onClick={() => setWinner(option.value as WinnerChoice)}
-                  className={`rounded-2xl border px-3 py-3 text-sm font-semibold ${
+                  className={`rounded-[22px] border px-3 py-3 text-sm font-semibold transition ${
                     winner === option.value
-                      ? "border-lime bg-lime text-night"
-                      : "border-white/10 bg-white/10 text-white"
+                      ? "border-lime bg-gradient-to-br from-lime to-gold text-night shadow-[0_16px_30px_rgba(125,223,100,0.2)]"
+                      : "border-white/10 bg-white/[0.05] text-white"
                   }`}
                 >
                   <span className="block">{option.label}</span>
@@ -116,15 +116,15 @@ export default function BetPage() {
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm text-white/70">Escolha a cerveja da aposta</p>
+          <p className="tiny-label">Escolha a cerveja da aposta</p>
           <div className="space-y-3">
             {beers.map((beer) => (
               <button
                 key={beer.id}
                 type="button"
                 onClick={() => setCervejaId(beer.id)}
-                className={`flex w-full items-center justify-between rounded-2xl border px-4 py-4 text-left transition ${
-                  cervejaId === beer.id ? "border-gold bg-gold/10" : "border-white/10 bg-white/5"
+                className={`flex w-full items-center justify-between rounded-[22px] border px-4 py-4 text-left transition ${
+                  cervejaId === beer.id ? "border-gold bg-gold/10" : "border-white/10 bg-white/[0.05]"
                 }`}
               >
                 <div>
@@ -138,7 +138,7 @@ export default function BetPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm text-white/70">Quantidade</label>
+          <label className="mb-2 block tiny-label">Quantidade</label>
           <input
             className="input"
             type="number"
@@ -149,18 +149,18 @@ export default function BetPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 rounded-3xl border border-white/10 bg-black/20 p-4 text-sm">
+        <div className="grid grid-cols-3 gap-3 rounded-[24px] border border-white/10 bg-black/20 p-4 text-sm">
           <div>
-            <p className="text-white/50">Entrada</p>
-            <p className="mt-1 font-semibold text-lime">{cervejas} cervejas</p>
+            <p className="tiny-label">Entrada</p>
+            <p className="mt-2 font-semibold text-lime">{cervejas} cervejas</p>
           </div>
           <div>
-            <p className="text-white/50">Cerveja escolhida</p>
-            <p className="mt-1 font-semibold text-white">{cervejaSelecionada?.nome ?? "-"}</p>
+            <p className="tiny-label">Cerveja</p>
+            <p className="mt-2 font-semibold text-white">{cervejaSelecionada?.nome ?? "-"}</p>
           </div>
           <div>
-            <p className="text-white/50">Regra</p>
-            <p className="mt-1 font-semibold text-gold">1 cerveja fica no bar</p>
+            <p className="tiny-label">Regra</p>
+            <p className="mt-2 font-semibold text-gold">1 cerveja fica no bar</p>
           </div>
         </div>
 

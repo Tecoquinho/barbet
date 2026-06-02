@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import MatchCard from "../components/MatchCard";
 import NoticeCard from "../components/NoticeCard";
 import SectionHeader from "../components/SectionHeader";
+import StatCard from "../components/StatCard";
 import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets, getOpenMatches } from "../services/clientService";
 import { Bet, Match } from "../types/api";
@@ -34,23 +35,14 @@ export default function MatchesPage() {
   return (
     <div className="space-y-5">
       <SectionHeader
-        eyebrow={session ? `${session.barNome} • ${session.mesaCodigo}` : "Carregando"}
-        title="Jogos de Hoje"
-        description="Escolha o jogo, entre no pool da rodada e dispute as cervejas perdidas por quem errar."
+        eyebrow={session ? `${session.barNome} / ${session.mesaCodigo}` : "Carregando"}
+        title="Jogos da rodada"
+        description="Escolha o confronto, entre no pool e acompanhe os palpites da sua mesa com clima de sports bar."
       />
       <div className="grid grid-cols-3 gap-3">
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Jogos hoje</p>
-          <p className="mt-2 font-display text-3xl font-bold text-gold">{matches.length}</p>
-        </div>
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Minhas apostas</p>
-          <p className="mt-2 font-display text-3xl font-bold text-lime">{bets.length}</p>
-        </div>
-        <div className="glass-panel p-4">
-          <p className="text-sm text-white/60">Cervejas apostadas</p>
-          <p className="mt-2 font-display text-2xl font-bold text-white">{totalApostado.toFixed(0)}</p>
-        </div>
+        <StatCard label="Jogos hoje" value={matches.length} hint="Ao vivo no pool" />
+        <StatCard label="Meus palpites" value={bets.length} hint="Entradas confirmadas" />
+        <StatCard label="Cervejas" value={totalApostado.toFixed(0)} hint="Volume apostado" />
       </div>
       <NoticeCard />
       <div className="space-y-4">
@@ -65,7 +57,7 @@ export default function MatchesPage() {
             action={
               <Link
                 to={`/bar/${session?.barSlug}/mesa/${session?.mesaCodigo}/jogos/${match.id}/apostar`}
-                className="rounded-2xl bg-lime px-4 py-2 text-sm font-semibold text-night"
+                className="inline-flex rounded-[20px] bg-gradient-to-r from-lime to-gold px-4 py-2.5 text-sm font-semibold text-night shadow-[0_14px_28px_rgba(125,223,100,0.2)]"
               >
                 Apostar agora
               </Link>
