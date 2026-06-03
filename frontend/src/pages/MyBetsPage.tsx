@@ -1,37 +1,24 @@
-import { IconBeer, IconClockHour4, IconRosetteDiscountCheck, IconX } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
-import NoticeCard from "../components/NoticeCard";
-import SectionHeader from "../components/SectionHeader";
-import StatCard from "../components/StatCard";
 import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets } from "../services/clientService";
 import { Bet } from "../types/api";
 
-function resolveStatus(bet: Bet) {
+function getChoiceMeta(bet: Bet) {
+  if (bet.vencedorEscolhido === "TEAM_A") return { flag: "🏆", label: `${bet.timeA} vence` };
+  if (bet.vencedorEscolhido === "TEAM_B") return { flag: "🏆", label: `${bet.timeB} vence` };
+  return { flag: "⚖️", label: "Empate" };
+}
+
+function getStatusClass(bet: Bet) {
   if (bet.status === "OPEN" || bet.status === "CLOSED") {
-    return {
-      label: "Pendente",
-      tone: "text-accent",
-      bg: "bg-accent-bg",
-      icon: IconClockHour4,
-    };
+    return { label: "Pendente", className: "status-pendente" };
   }
 
   if ((bet.saldoLiquidoCervejas ?? 0) >= 0) {
-    return {
-      label: "Ganhou",
-      tone: "text-green",
-      bg: "bg-green-bg",
-      icon: IconRosetteDiscountCheck,
-    };
+    return { label: "Ganhou", className: "status-ganhou" };
   }
 
-  return {
-    label: "Perdeu",
-    tone: "text-red",
-    bg: "bg-red/10",
-    icon: IconX,
-  };
+  return { label: "Perdeu", className: "status-perdeu" };
 }
 
 export default function MyBetsPage() {
@@ -43,79 +30,69 @@ export default function MyBetsPage() {
     getCustomerBets(session.customerId).then(setBets);
   }, [session]);
 
-  const summary = useMemo(() => {
-    return bets.reduce(
-      (acc, bet) => {
-        acc.total += bet.quantidadeCervejas;
-        acc.saldo += bet.saldoLiquidoCervejas ?? 0;
-        return acc;
-      },
-      { total: 0, saldo: 0 }
-    );
-  }, [bets]);
+  const totalPool = useMemo(() => bets.reduce((sum, bet) => sum + bet.quantidadeCervejas, 0), [bets]);
 
   return (
-    <div className="space-y-5">
-      <SectionHeader
-        eyebrow="Apostas"
-        title="Apostas da mesa"
-        description="Veja os bilhetes ativos e o resultado de cada jogo sem sair do clima da rodada."
-      />
-
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Bilhetes" value={bets.length} hint="Criados por voce" />
-        <StatCard label="Saldo" value={`${summary.saldo.toFixed(1)}🍺`} hint={`${summary.total} cervejas apostadas`} />
+    <>
+      <div className="section-wrap">
+        <div className="ranking-head">
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700 }}>Apostas da Mesa</div>
+            <div style={{ fontSize: 12, color: "#8b949e" }}>Bilhetes ativos do seu lado da mesa</div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 12, color: "#8b949e" }}>Em jogo</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#f0b429" }}>{totalPool} 🍺</div>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-3">
-        {bets.length === 0 && <div className="surface-card px-4 py-5 text-sm text-text-secondary">Nenhuma aposta ainda.</div>}
-        {bets.map((bet) => {
-          const status = resolveStatus(bet);
-          const StatusIcon = status.icon;
+      {bets.length === 0 ? (
+        <div style={{ padding: "0 14px" }}>
+          <div className="aposta-card">
+            <div className="aposta-body" style={{ textAlign: "center", color: "#8b949e", padding: 24 }}>
+              Nenhuma aposta ainda. Entra em um jogo e abre o pool da rodada.
+            </div>
+          </div>
+        </div>
+      ) : null}
 
-          return (
-            <div key={bet.id} className="surface-card px-4 py-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="section-label">{bet.timeA} x {bet.timeB}</p>
-                  <p className="mt-2 text-base font-medium text-text-primary">{bet.vencedorEscolhido.replace("TEAM_", "Time ")}</p>
-                  <p className="mt-1 text-sm text-text-secondary">
-                    Placar: {bet.placarTimeA ?? "-"} x {bet.placarTimeB ?? "-"}
-                  </p>
-                </div>
-                <div className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${status.tone} ${status.bg}`}>
-                  <StatusIcon size={14} />
-                  {status.label}
+      {bets.map((bet) => {
+        const choice = getChoiceMeta(bet);
+        const status = getStatusClass(bet);
+
+        return (
+          <div key={bet.id} className="aposta-card">
+            <div className="aposta-header">
+              <span className="aposta-jogo">
+                {bet.timeA} × {bet.timeB}
+              </span>
+              <span className={`aposta-status ${status.className}`}>{status.label}</span>
+            </div>
+
+            <div className="aposta-body">
+              <div className="aposta-escolha">
+                <span className="flag">{choice.flag}</span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#e6edf3" }}>{choice.label}</div>
+                  <div style={{ fontSize: 11, color: "#8b949e" }}>
+                    Apostado por {session?.apelido ?? "Voce"} · {bet.cervejaNome ?? "Cerveja da mesa"}
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-4 divider-line" />
-
-              <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                <div>
-                  <p className="section-label">Entrada</p>
-                  <p className="mt-1 flex items-center gap-1 text-text-primary">
-                    <IconBeer size={16} className="text-accent" />
-                    {bet.quantidadeCervejas}
-                  </p>
-                </div>
-                <div>
-                  <p className="section-label">Premio</p>
-                  <p className="mt-1 text-text-primary">{(bet.premioCervejas ?? 0).toFixed(1)}🍺</p>
-                </div>
-                <div>
-                  <p className="section-label">Saldo</p>
-                  <p className={`mt-1 font-medium ${(bet.saldoLiquidoCervejas ?? 0) >= 0 ? "text-green" : "text-red"}`}>
-                    {(bet.saldoLiquidoCervejas ?? 0).toFixed(1)}🍺
-                  </p>
-                </div>
+              <div className="aposta-valor">
+                <span>
+                  Aposta: <b style={{ color: "#f0b429" }}>{bet.quantidadeCervejas} 🍺</b>
+                </span>
+                <span>
+                  Pode ganhar: <b style={{ color: "#3fb950" }}>{(bet.premioCervejas ?? 0).toFixed(1)} 🍺</b>
+                </span>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      <NoticeCard />
-    </div>
+          </div>
+        );
+      })}
+    </>
   );
 }

@@ -1,23 +1,32 @@
 import {
-  IconBallFootball,
+  IconBattery2,
   IconBeer,
-  IconMedal,
-  IconReceipt2,
-  IconUserCircle,
+  IconSoccerField,
+  IconTicket,
+  IconTrophy,
+  IconWifi,
 } from "@tabler/icons-react";
 import { NavLink, Outlet, useLocation, useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useSessionStore } from "../stores/sessionStore";
 
 const navItems = [
-  { to: "jogos", label: "Jogos", icon: IconBallFootball },
-  { to: "apostas", label: "Apostas", icon: IconReceipt2 },
-  { to: "placar", label: "Placar", icon: IconMedal },
+  { to: "jogos", label: "Jogos", icon: IconSoccerField },
+  { to: "apostas", label: "Apostas", icon: IconTicket },
+  { to: "placar", label: "Placar", icon: IconTrophy },
 ];
 
 function getSavedAvatar(customerId?: number) {
   if (!customerId) return "🍺";
   return localStorage.getItem(`barbet-avatar-${customerId}`) ?? "🍺";
+}
+
+function getCurrentTimeLabel() {
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
 }
 
 export default function ClientLayout() {
@@ -33,65 +42,61 @@ export default function ClientLayout() {
       .join(" ");
   }, [barSlug]);
 
-  const avatar = getSavedAvatar(session?.customerId);
   const isEntryScreen = location.pathname === `/bar/${barSlug}/mesa/${mesaCodigo}` || location.pathname.endsWith("/entrada");
-  const currentPath = location.pathname;
-
+  const avatar = getSavedAvatar(session?.customerId);
   return (
-    <div className="mx-auto flex min-h-screen items-start justify-center px-3 py-3">
-      <div className="app-shell bottom-safe flex flex-col overflow-hidden px-4 pb-4 pt-4">
-        <div className="mb-4 flex items-center justify-center">
-          <div className="h-1.5 w-24 rounded-full bg-border-subtle" />
+    <div className="page-bg">
+      <div className="phone-frame">
+        <div className="status-bar">
+          <span>{getCurrentTimeLabel()}</span>
+          <div className="status-icons">
+            <IconWifi size={13} stroke={2} />
+            <IconBattery2 size={13} stroke={2} />
+          </div>
         </div>
 
-        <header className="surface-card mb-4 px-4 py-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-accent">
-                <IconBeer size={18} stroke={2} />
-                <span className="section-label text-accent">BarBet</span>
+        <div className="screen">
+          {!isEntryScreen && (
+            <div className="top-bar">
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="avatar">{avatar}</div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#e6edf3" }}>
+                    {session?.apelido ?? "Visitante"}
+                  </div>
+                  <div style={{ fontSize: 10, color: "#8b949e" }}>
+                    Mesa {mesaCodigo} · {barLabel || "BarBet"}
+                  </div>
+                </div>
               </div>
-              <p className="mt-2 font-display text-[24px] font-semibold leading-tight text-text-primary">
-                {barLabel || "BarBet"}
-              </p>
-              <p className="mt-1 text-sm text-text-secondary">Mesa {mesaCodigo} • bolao simbolico da rodada</p>
-            </div>
-            <div className="surface-raised flex items-center gap-2 px-3 py-2">
-              <span className="text-xl leading-none">{avatar}</span>
-              <div className="text-right">
-                <p className="section-label">Conta</p>
-                <p className="text-sm font-medium text-text-primary">{session?.apelido ?? "Visitante"}</p>
+              <div className="saldo-pill">
+                <IconBeer size={14} stroke={2} />
+                <span>Pool</span>
               </div>
             </div>
-          </div>
-        </header>
+          )}
 
-        <main className="flex-1">
           <Outlet />
-        </main>
+        </div>
 
         {!isEntryScreen && (
-          <nav className="surface-card sticky bottom-0 mt-4 grid grid-cols-3 gap-2 p-2">
+          <div className="bottom-nav">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const active = currentPath.endsWith(`/${item.to}`) || (item.to === "apostas" && currentPath.endsWith("/meus-palpites"));
+              const active =
+                location.pathname.endsWith(`/${item.to}`) ||
+                (item.to === "apostas" && location.pathname.endsWith("/meus-palpites"));
 
               return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                className={`flex flex-col items-center justify-center rounded-[16px] px-3 py-3 transition ${
-                  active ? "bg-accent text-bg-base" : "text-text-secondary"
-                }`}
-                >
-                  <Icon size={18} stroke={2} />
-                  <span className={`mt-1 text-[12px] font-medium ${active ? "text-bg-base" : "text-text-secondary"}`}>
-                    {item.label}
-                  </span>
+                <NavLink key={item.to} to={item.to} className={`bnav-item ${active ? "active" : ""}`}>
+                  <div style={{ position: "relative" }}>
+                    <Icon size={20} stroke={1.8} />
+                  </div>
+                  <span>{item.label}</span>
                 </NavLink>
               );
             })}
-          </nav>
+          </div>
         )}
       </div>
     </div>

@@ -24,6 +24,7 @@ export default function App() {
         <Route path="meus-palpites" element={<MyBetsPage />} />
         <Route path="apostas" element={<MyBetsPage />} />
         <Route path="placar" element={<ScoreboardPage />} />
+        <Route path="perfil" element={<EnterTablePage />} />
       </Route>
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin" element={<AdminLayout />}>

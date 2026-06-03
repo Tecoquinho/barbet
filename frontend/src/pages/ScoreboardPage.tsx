@@ -1,27 +1,38 @@
-import { IconAward, IconBeer, IconCrown } from "@tabler/icons-react";
-import NoticeCard from "../components/NoticeCard";
-import SectionHeader from "../components/SectionHeader";
+import { useEffect, useMemo, useState } from "react";
 import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets } from "../services/clientService";
-import { useEffect, useMemo, useState } from "react";
 import { Bet } from "../types/api";
 
 interface RankingRow {
   id: number;
   name: string;
   avatar: string;
-  beers: number;
+  saldo: number;
+  stats: string;
 }
 
 const baseRanking: RankingRow[] = [
-  { id: 1, name: "Carol", avatar: "🔥", beers: 22 },
-  { id: 2, name: "Motta", avatar: "😎", beers: 18 },
-  { id: 3, name: "Bia", avatar: "⚽", beers: 16 },
-  { id: 4, name: "JP", avatar: "🍀", beers: 11 },
+  { id: 1, name: "Joao", avatar: "J", saldo: 6, stats: "4 apostas · 3 certas" },
+  { id: 2, name: "Maria", avatar: "M", saldo: 3, stats: "5 apostas · 3 certas" },
+  { id: 3, name: "Rafael", avatar: "R", saldo: -2, stats: "3 apostas · 1 certa" },
+  { id: 4, name: "Pedro", avatar: "P", saldo: -5, stats: "4 apostas · 1 certa" },
 ];
 
 function getSaldo(bets: Bet[]) {
-  return bets.reduce((sum, bet) => sum + (bet.saldoLiquidoCervejas ?? 0), 0);
+  return Number(bets.reduce((sum, bet) => sum + (bet.saldoLiquidoCervejas ?? 0), 0).toFixed(1));
+}
+
+function getPositionClass(index: number) {
+  if (index === 0) return "pos-1";
+  if (index === 1) return "pos-2";
+  if (index === 2) return "pos-3";
+  return "pos-n";
+}
+
+function getSaldoClass(value: number) {
+  if (value > 0) return "saldo-pos";
+  if (value < 0) return "saldo-neg";
+  return "saldo-zero";
 }
 
 export default function ScoreboardPage() {
@@ -35,67 +46,56 @@ export default function ScoreboardPage() {
 
   const ranking = useMemo(() => {
     const currentUser: RankingRow = {
-      id: session?.customerId ?? 999,
+      id: session?.customerId ?? 9999,
       name: localStorage.getItem(`barbet-nickname-${session?.customerId}`) ?? session?.apelido ?? "Voce",
-      avatar: localStorage.getItem(`barbet-avatar-${session?.customerId}`) ?? "🍺",
-      beers: Number(getSaldo(bets).toFixed(1)),
+      avatar: (localStorage.getItem(`barbet-avatar-${session?.customerId}`) ?? "🍺").slice(0, 2),
+      saldo: getSaldo(bets),
+      stats: `${bets.length} apostas · ${bets.filter((bet) => (bet.saldoLiquidoCervejas ?? 0) >= 0).length} certas`,
     };
 
-    return [...baseRanking, currentUser].sort((a, b) => b.beers - a.beers);
+    return [...baseRanking, currentUser].sort((a, b) => b.saldo - a.saldo);
   }, [bets, session]);
 
-  const medals = ["🥇", "🥈", "🥉"];
+  const totalInPlay = useMemo(() => bets.reduce((sum, bet) => sum + bet.quantidadeCervejas, 0), [bets]);
 
   return (
-    <div className="space-y-5">
-      <SectionHeader
-        eyebrow="Placar"
-        title="Ranking da mesa"
-        description="Acompanhe quem esta mais quente na rodada e quem ja encheu a mesa de cervejas."
-      />
-
-      <div className="surface-card px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="section-label">Mesa em disputa</p>
-            <p className="mt-2 font-display text-2xl font-semibold text-text-primary">Top cervejeiros</p>
-          </div>
-          <div className="pill-accent">
-            <IconCrown size={16} className="mr-2" />
-            Copa
-          </div>
+    <>
+      <div className="ranking-head">
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700 }}>Placar da Mesa</div>
+          <div style={{ fontSize: 12, color: "#8b949e" }}>Copa 2026 · Mesa {session?.mesaCodigo ?? "01"}</div>
         </div>
-
-        <div className="mt-4 space-y-3">
-          {ranking.map((item, index) => (
-            <div key={`${item.id}-${item.name}`} className="surface-raised flex items-center justify-between px-4 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-accent-bg text-xl">
-                  {item.avatar}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{medals[index] ?? "•"}</span>
-                    <p className="font-medium text-text-primary">{item.name}</p>
-                  </div>
-                  <p className="mt-1 text-sm text-text-secondary">
-                    {index < 3 ? "No pódio da rodada" : "Seguindo na disputa"}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="flex items-center justify-end gap-1 text-green">
-                  <IconBeer size={16} />
-                  <span className="text-lg font-semibold">{item.beers.toFixed(1)}</span>
-                </div>
-                <p className="mt-1 text-xs text-text-muted">saldo</p>
-              </div>
-            </div>
-          ))}
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 12, color: "#8b949e" }}>Em jogo</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#f0b429" }}>{totalInPlay} 🍺</div>
         </div>
       </div>
 
-      <NoticeCard />
-    </div>
+      <div className="ranking-card" style={{ margin: "0 14px 16px" }}>
+        {ranking.map((item, index) => (
+          <div key={`${item.id}-${item.name}`} className="ranking-row">
+            <div className={`pos-badge ${getPositionClass(index)}`}>{index + 1}</div>
+            <div className="jogador-avatar" style={{ color: index === 0 ? "#f0b429" : "#8b949e" }}>
+              {item.avatar}
+            </div>
+            <div className="jogador-info">
+              <div className="jogador-nome">{item.name}</div>
+              <div className="jogador-stats">{item.stats}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div className={`saldo-num ${getSaldoClass(item.saldo)}`}>
+                {item.saldo > 0 ? "+" : ""}
+                {item.saldo.toFixed(1)} 🍺
+              </div>
+              <div className="saldo-label">saldo</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontSize: 11, color: "#8b949e", textAlign: "center", padding: 8 }}>
+        Atualizado em tempo real · Apostas pendentes nao contam
+      </div>
+    </>
   );
 }

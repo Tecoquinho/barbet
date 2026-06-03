@@ -1,37 +1,57 @@
-import {
-  IconArrowUpRight,
-  IconBeer,
-  IconBolt,
-  IconClock,
-  IconPlayFootball,
-  IconUserCircle,
-} from "@tabler/icons-react";
+import { IconClock, IconSoccerField } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import NoticeCard from "../components/NoticeCard";
-import SectionHeader from "../components/SectionHeader";
+import { useNavigate } from "react-router-dom";
 import { useRequireSession } from "../hooks/useRequireSession";
 import { getCustomerBets, getOpenMatches } from "../services/clientService";
-import { Bet, Match } from "../types/api";
+import { Bet, Match, WinnerChoice } from "../types/api";
 
-function getSavedAvatar(customerId?: number) {
-  if (!customerId) return "🍺";
-  return localStorage.getItem(`barbet-avatar-${customerId}`) ?? "🍺";
+const flagMap: Record<string, string> = {
+  Brasil: "🇧🇷",
+  Alemanha: "🇩🇪",
+  Argentina: "🇦🇷",
+  Franca: "🇫🇷",
+  Portugal: "🇵🇹",
+  Uruguai: "🇺🇾",
+};
+
+const siglaMap: Record<string, string> = {
+  Brasil: "BRA",
+  Alemanha: "GER",
+  Argentina: "ARG",
+  Franca: "FRA",
+  Portugal: "POR",
+  Uruguai: "URU",
+};
+
+function getFlag(team: string) {
+  return flagMap[team] ?? "🏳️";
+}
+
+function getSigla(team: string) {
+  return siglaMap[team] ?? team.slice(0, 3).toUpperCase();
 }
 
 function getLiveMinute() {
-  const base = 61;
-  return base + (Math.floor(Date.now() / 60000) % 19);
+  const base = 68;
+  return Math.min(90, base + (Math.floor(Date.now() / 8000) % 23));
+}
+
+function getChoiceOdd(match: Match, choice: WinnerChoice) {
+  if (choice === "TEAM_A") return match.oddTeamA ?? 1;
+  if (choice === "TEAM_B") return match.oddTeamB ?? 1;
+  return match.oddDraw ?? 1;
 }
 
 export default function MatchesPage() {
   const session = useRequireSession();
+  const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>([]);
   const [bets, setBets] = useState<Bet[]>([]);
   const [minute, setMinute] = useState(getLiveMinute());
 
   useEffect(() => {
     if (!session) return;
+
     Promise.all([getOpenMatches(session.barSlug), getCustomerBets(session.customerId)]).then(([matchData, betData]) => {
       setMatches(matchData);
       setBets(betData);
@@ -44,113 +64,143 @@ export default function MatchesPage() {
   }, []);
 
   const liveMatch = matches[0];
-  const avatar = getSavedAvatar(session?.customerId);
-  const balance = useMemo(() => bets.reduce((sum, bet) => sum + (bet.saldoLiquidoCervejas ?? 0), 0), [bets]);
+  const pendingBets = useMemo(() => bets.filter((bet) => bet.status === "OPEN" || bet.status === "CLOSED").length, [bets]);
+
+  function openBet(matchId: number) {
+    if (!session) return;
+    navigate(`/bar/${session.barSlug}/mesa/${session.mesaCodigo}/jogos/${matchId}/apostar`);
+  }
 
   return (
-    <div className="space-y-5">
-      <div className="surface-card px-4 py-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-accent-bg text-2xl">{avatar}</div>
-            <div>
-              <p className="section-label">Jogos</p>
-              <p className="text-base font-medium text-text-primary">{session?.apelido ?? "Jogador"}</p>
-            </div>
-          </div>
-          <div className="rounded-[14px] border border-border-default bg-bg-raised px-3 py-2 text-right">
-            <p className="section-label">Saldo</p>
-            <p className="mt-1 flex items-center justify-end gap-1 font-medium text-accent">
-              <IconBeer size={16} />
-              {balance.toFixed(1)}
-            </p>
-          </div>
+    <>
+      <div className="section-wrap">
+        <div className="group-pill">
+          <IconClock size={13} stroke={2} />
+          <span>{pendingBets} apostas ativas na mesa</span>
         </div>
       </div>
 
-      <SectionHeader
-        eyebrow="Jogos"
-        title="Rodada aberta"
-        description="Veja o ao vivo, escolha o confronto e solte sua aposta simbolica em poucos toques."
-      />
-
-      {liveMatch && (
-        <div className="surface-card overflow-hidden px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="pill-accent">
-              <IconBolt size={14} className="mr-2" />
-              Ao vivo
+      {liveMatch ? (
+        <div className="live-banner">
+          <div className="live-header">
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span className="live-dot" />
+              <span style={{ fontSize: 10, fontWeight: 700, color: "#3fb950", letterSpacing: 0.8 }}>AO VIVO</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
-              <IconClock size={16} />
-              {minute}'
+            <span style={{ fontSize: 10, color: "#3fb950", fontWeight: 700 }}>{minute}'</span>
+          </div>
+
+          <div className="live-body">
+            <div className="time">
+              <span className="time-bandeira">{getFlag(liveMatch.timeA)}</span>
+              <span className="time-nome">{liveMatch.timeA}</span>
+              <span className="time-sigla">{getSigla(liveMatch.timeA)}</span>
+            </div>
+
+            <div className="placar-box">
+              <div className="placar">
+                <span className="placar-num">{liveMatch.golsTimeA ?? 1}</span>
+                <span className="placar-sep">×</span>
+                <span className="placar-num">{liveMatch.golsTimeB ?? 0}</span>
+              </div>
+              <span className="minuto">{minute}'</span>
+            </div>
+
+            <div className="time">
+              <span className="time-bandeira">{getFlag(liveMatch.timeB)}</span>
+              <span className="time-nome">{liveMatch.timeB}</span>
+              <span className="time-sigla">{getSigla(liveMatch.timeB)}</span>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-            <div>
-              <p className="text-lg font-semibold text-text-primary">{liveMatch.timeA}</p>
-            </div>
-            <div className="rounded-[14px] bg-bg-raised px-4 py-3 text-center">
-              <p className="font-display text-3xl font-semibold text-accent">1 x 0</p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-semibold text-text-primary">{liveMatch.timeB}</p>
-            </div>
+
+          <div className="live-footer">
+            {[
+              { label: liveMatch.timeA, flag: getFlag(liveMatch.timeA), value: "TEAM_A" as WinnerChoice },
+              { label: "Empate", flag: "⚖️", value: "DRAW" as WinnerChoice },
+              { label: liveMatch.timeB, flag: getFlag(liveMatch.timeB), value: "TEAM_B" as WinnerChoice },
+            ].map((option) => (
+              <button key={option.value} type="button" className="btn-apostar" onClick={() => openBet(liveMatch.id)}>
+                <span>{option.flag}</span>
+                <span>{option.label}</span>
+                <span className="odds">+{getChoiceOdd(liveMatch, option.value).toFixed(1)}x</span>
+              </button>
+            ))}
           </div>
         </div>
-      )}
+      ) : null}
 
-      <div className="space-y-3">
-        {matches.map((match) => (
-          <div key={match.id} className="surface-card px-4 py-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="section-label">{match.stage ?? "Rodada"}</p>
-                <h3 className="mt-2 font-display text-[24px] font-semibold tracking-[-0.03em] text-text-primary">
-                  {match.timeA} <span className="text-text-muted">x</span> {match.timeB}
-                </h3>
-                <p className="mt-2 text-sm text-text-secondary">
-                  {new Date(match.dataHora).toLocaleString("pt-BR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
+      <div className="section-wrap">
+        <div className="section-title">
+          <IconSoccerField size={14} stroke={2} />
+          Proximos jogos
+        </div>
+      </div>
+
+      {matches.map((match, index) => (
+        <div key={match.id} className={`jogo-card ${index === 0 ? "ao-vivo" : ""}`}>
+          <div className="jogo-header">
+            <span>{match.competition ?? "Copa do Mundo"} · {match.stage ?? "Rodada"}</span>
+            <span>
+              {index === 0
+                ? "Agora"
+                : new Date(match.dataHora).toLocaleString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
                   })}
-                </p>
-              </div>
-              <div className="pill">
-                <IconPlayFootball size={14} className="mr-2" />
-                {match.venue ?? "Arena"}
-              </div>
+            </span>
+          </div>
+
+          <div className="jogo-body">
+            <div className="time">
+              <span className="time-bandeira">{getFlag(match.timeA)}</span>
+              <span className="time-nome">{match.timeA}</span>
+              <span className="time-sigla">{getSigla(match.timeA)}</span>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[
-                { label: match.timeA, value: "TEAM_A" },
-                { label: "Empate", value: "DRAW" },
-                { label: match.timeB, value: "TEAM_B" },
-              ].map((option) => (
-                <Link
-                  key={option.value}
-                  to={`/bar/${session?.barSlug}/mesa/${session?.mesaCodigo}/jogos/${match.id}/apostar`}
-                  className="surface-raised surface-hover flex min-h-[72px] flex-col justify-between px-3 py-3"
-                >
-                  <span className="section-label">{option.value === "DRAW" ? "X" : option.value === "TEAM_A" ? "1" : "2"}</span>
-                  <span className="text-sm font-medium text-text-primary">{option.label}</span>
-                </Link>
-              ))}
+            <div className="placar-box">
+              <div className="placar">
+                <span className="placar-num" style={{ color: "#8b949e", fontSize: 28 }}>
+                  {index === 0 ? match.golsTimeA ?? 1 : "-"}
+                </span>
+                <span className="placar-sep">×</span>
+                <span className="placar-num" style={{ color: "#8b949e", fontSize: 28 }}>
+                  {index === 0 ? match.golsTimeB ?? 0 : "-"}
+                </span>
+              </div>
+              <span className="horario">
+                {index === 0
+                  ? `${minute}'`
+                  : new Date(match.dataHora).toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+              </span>
             </div>
 
-            <div className="mt-4 flex items-center justify-between text-sm text-text-secondary">
-              <span>{match.competition ?? "Copa do Mundo BarBet"}</span>
-              <div className="flex items-center gap-1 text-accent">
-                <span>Apostar</span>
-                <IconArrowUpRight size={16} />
-              </div>
+            <div className="time">
+              <span className="time-bandeira">{getFlag(match.timeB)}</span>
+              <span className="time-nome">{match.timeB}</span>
+              <span className="time-sigla">{getSigla(match.timeB)}</span>
             </div>
           </div>
-        ))}
-      </div>
 
-      <NoticeCard />
-    </div>
+          <div className="jogo-footer">
+            {[
+              { label: match.timeA, flag: getFlag(match.timeA), value: "TEAM_A" as WinnerChoice },
+              { label: "Empate", flag: "⚖️", value: "DRAW" as WinnerChoice },
+              { label: match.timeB, flag: getFlag(match.timeB), value: "TEAM_B" as WinnerChoice },
+            ].map((option) => (
+              <button key={option.value} type="button" className="btn-apostar" onClick={() => openBet(match.id)}>
+                <span>{option.flag}</span>
+                <span>{option.label}</span>
+                <span className="odds">+{getChoiceOdd(match, option.value).toFixed(1)}x</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
   );
 }
