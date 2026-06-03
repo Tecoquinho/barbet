@@ -21,7 +21,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-night px-4 py-6">
+    <div className="min-h-screen bg-bg-base px-4 py-6">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-col gap-4 rounded-[32px] border border-white/10 bg-panel p-5 md:flex-row md:items-center md:justify-between">
           <div>
@@ -40,7 +40,7 @@ export default function AdminLayout() {
               end={item.to === "/admin"}
               className={({ isActive }) =>
                 `rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                  isActive ? "bg-gold text-night" : "glass-panel text-white/80"
+                  isActive ? "bg-gold text-bg-base" : "glass-panel text-white/80"
                 }`
               }
             >

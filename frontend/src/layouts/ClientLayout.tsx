@@ -1,74 +1,96 @@
+import {
+  IconBallFootball,
+  IconBeer,
+  IconMedal,
+  IconReceipt2,
+  IconUserCircle,
+} from "@tabler/icons-react";
 import { NavLink, Outlet, useLocation, useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useSessionStore } from "../stores/sessionStore";
 
 const navItems = [
-  { to: "jogos", label: "Jogos", hint: "Rodada" },
-  { to: "meus-palpites", label: "Palpites", hint: "Minha mesa" },
+  { to: "jogos", label: "Jogos", icon: IconBallFootball },
+  { to: "apostas", label: "Apostas", icon: IconReceipt2 },
+  { to: "placar", label: "Placar", icon: IconMedal },
 ];
 
+function getSavedAvatar(customerId?: number) {
+  if (!customerId) return "🍺";
+  return localStorage.getItem(`barbet-avatar-${customerId}`) ?? "🍺";
+}
+
 export default function ClientLayout() {
-  const { barSlug = "barbet", mesaCodigo = "mesa" } = useParams();
   const location = useLocation();
-  const barName = barSlug
-    .split("-")
-    .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
-    .join(" ");
-  const isEntry = location.pathname.endsWith(`/${mesaCodigo}`);
+  const { barSlug = "", mesaCodigo = "" } = useParams();
+  const { session } = useSessionStore();
+
+  const barLabel = useMemo(() => {
+    return barSlug
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  }, [barSlug]);
+
+  const avatar = getSavedAvatar(session?.customerId);
+  const isEntryScreen = location.pathname === `/bar/${barSlug}/mesa/${mesaCodigo}` || location.pathname.endsWith("/entrada");
+  const currentPath = location.pathname;
 
   return (
     <div className="mx-auto flex min-h-screen items-start justify-center px-3 py-3">
-      <div className="phone-frame bottom-safe flex flex-col px-4 pb-6 pt-4">
-        <div className="mb-5 flex items-center justify-center">
-          <div className="h-1.5 w-24 rounded-full bg-white/10" />
+      <div className="app-shell bottom-safe flex flex-col overflow-hidden px-4 pb-4 pt-4">
+        <div className="mb-4 flex items-center justify-center">
+          <div className="h-1.5 w-24 rounded-full bg-border-subtle" />
         </div>
-        <div className="glass-panel hero-panel mb-5 overflow-hidden p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">BarBet</p>
-              <h1 className="mt-2 max-w-[11ch] font-display text-[1.85rem] font-bold leading-[1.02] text-white">
-                Matchday no bar
-              </h1>
+
+        <header className="surface-card mb-4 px-4 py-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 text-accent">
+                <IconBeer size={18} stroke={2} />
+                <span className="section-label text-accent">BarBet</span>
+              </div>
+              <p className="mt-2 font-display text-[24px] font-semibold leading-tight text-text-primary">
+                {barLabel || "BarBet"}
+              </p>
+              <p className="mt-1 text-sm text-text-secondary">Mesa {mesaCodigo} • bolao simbolico da rodada</p>
             </div>
-            <div className="rounded-[22px] border border-white/10 bg-[#0f141b] px-3 py-2 text-right">
-              <p className="tiny-label text-white/55">Mesa</p>
-              <p className="mt-1 font-display text-lg font-semibold text-white">{mesaCodigo}</p>
+            <div className="surface-raised flex items-center gap-2 px-3 py-2">
+              <span className="text-xl leading-none">{avatar}</span>
+              <div className="text-right">
+                <p className="section-label">Conta</p>
+                <p className="text-sm font-medium text-text-primary">{session?.apelido ?? "Visitante"}</p>
+              </div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
-            <div className="rounded-[22px] border border-white/10 bg-[#0f141b] px-4 py-3">
-              <p className="tiny-label text-white/55">Bar</p>
-              <p className="mt-1 truncate text-sm font-semibold text-white">{barName}</p>
-            </div>
-            <div className="rounded-[22px] border border-gold/20 bg-gold/10 px-4 py-3 text-right">
-              <p className="tiny-label text-gold/80">Modo</p>
-              <p className="mt-1 text-sm font-semibold text-gold">Simbolico</p>
-            </div>
-          </div>
-        </div>
+        </header>
+
         <main className="flex-1">
           <Outlet />
         </main>
-        {!isEntry && (
-          <nav className="glass-panel sticky bottom-3 mt-5 grid grid-cols-2 gap-2 p-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `rounded-[24px] px-4 py-3 text-left transition ${
-                    isActive ? "bg-gold text-night" : "bg-transparent text-white/68"
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <div>
-                    <p className={`text-[11px] uppercase tracking-[0.22em] ${isActive ? "text-night/55" : "text-white/35"}`}>
-                      {item.hint}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold">{item.label}</p>
-                  </div>
-                )}
-              </NavLink>
-            ))}
+
+        {!isEntryScreen && (
+          <nav className="surface-card sticky bottom-0 mt-4 grid grid-cols-3 gap-2 p-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = currentPath.endsWith(`/${item.to}`) || (item.to === "apostas" && currentPath.endsWith("/meus-palpites"));
+
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={`flex flex-col items-center justify-center rounded-[24px] px-3 py-3 transition ${
+                    active ? "bg-accent text-bg-base" : "text-text-secondary"
+                  }`}
+                >
+                  <Icon size={18} stroke={2} />
+                  <span className={`mt-1 text-[12px] font-medium ${active ? "text-bg-base" : "text-text-secondary"}`}>
+                    {item.label}
+                  </span>
+                </NavLink>
+              );
+            })}
           </nav>
         )}
       </div>
