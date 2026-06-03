@@ -80,9 +80,9 @@ export default function ClientLayout() {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={`flex flex-col items-center justify-center rounded-[24px] px-3 py-3 transition ${
-                    active ? "bg-accent text-bg-base" : "text-text-secondary"
-                  }`}
+                className={`flex flex-col items-center justify-center rounded-[16px] px-3 py-3 transition ${
+                  active ? "bg-accent text-bg-base" : "text-text-secondary"
+                }`}
                 >
                   <Icon size={18} stroke={2} />
                   <span className={`mt-1 text-[12px] font-medium ${active ? "text-bg-base" : "text-text-secondary"}`}>

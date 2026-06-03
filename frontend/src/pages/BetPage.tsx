@@ -152,7 +152,7 @@ export default function BetPage() {
                     key={beer.id}
                     type="button"
                     onClick={() => setCervejaId(beer.id)}
-                    className={`flex w-full items-center justify-between rounded-[18px] border px-3 py-3 text-left ${
+                    className={`flex w-full items-center justify-between rounded-[14px] border px-3 py-3 text-left ${
                       cervejaId === beer.id ? "border-accent bg-accent-bg" : "border-border-default bg-bg-base"
                     }`}
                   >

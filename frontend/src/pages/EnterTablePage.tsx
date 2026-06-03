@@ -99,7 +99,7 @@ export default function EnterTablePage() {
                     key={item}
                     type="button"
                     onClick={() => setAvatar(item)}
-                    className={`rounded-[20px] border px-3 py-3 text-2xl transition ${
+                    className={`rounded-[14px] border px-3 py-3 text-2xl transition ${
                       avatar === item ? "border-accent bg-accent-bg" : "border-border-default bg-bg-raised"
                     }`}
                   >
@@ -146,7 +146,7 @@ export default function EnterTablePage() {
 
             <div className="surface-raised px-4 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-accent-bg text-3xl">{avatar}</div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-[14px] bg-accent-bg text-3xl">{avatar}</div>
                 <div>
                   <p className="font-medium text-text-primary">{nickname}</p>
                   <p className="text-sm text-text-secondary">Time: {team}</p>

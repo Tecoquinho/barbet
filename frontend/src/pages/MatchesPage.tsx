@@ -52,13 +52,13 @@ export default function MatchesPage() {
       <div className="surface-card px-4 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-accent-bg text-2xl">{avatar}</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-accent-bg text-2xl">{avatar}</div>
             <div>
               <p className="section-label">Jogos</p>
               <p className="text-base font-medium text-text-primary">{session?.apelido ?? "Jogador"}</p>
             </div>
           </div>
-          <div className="rounded-[20px] border border-border-default bg-bg-raised px-3 py-2 text-right">
+          <div className="rounded-[14px] border border-border-default bg-bg-raised px-3 py-2 text-right">
             <p className="section-label">Saldo</p>
             <p className="mt-1 flex items-center justify-end gap-1 font-medium text-accent">
               <IconBeer size={16} />
@@ -90,7 +90,7 @@ export default function MatchesPage() {
             <div>
               <p className="text-lg font-semibold text-text-primary">{liveMatch.timeA}</p>
             </div>
-            <div className="rounded-[22px] bg-bg-raised px-4 py-3 text-center">
+            <div className="rounded-[14px] bg-bg-raised px-4 py-3 text-center">
               <p className="font-display text-3xl font-semibold text-accent">1 x 0</p>
             </div>
             <div className="text-right">
